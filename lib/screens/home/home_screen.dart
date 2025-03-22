@@ -12,6 +12,15 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 207, 200, 200),
+      appBar: AppBar(
+        title: Text(
+          "Money Manager",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.blue,
+      ),
       body: SafeArea(
         child: ValueListenableBuilder(
           valueListenable: selectedIndexNotifier,
@@ -22,7 +31,11 @@ class HomeScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          print('add tranction');
+          if (selectedIndexNotifier.value == 0) {
+            print('add tranction');
+          } else {
+            print("add category");
+          }
         },
         child: Icon(Icons.add),
       ),
