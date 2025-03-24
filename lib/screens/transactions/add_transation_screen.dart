@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:money_manager_app/db/category/category_db.dart';
+import 'package:money_manager_app/db/transations/transation_db.dart';
 import 'package:money_manager_app/models/category/cateegory_model.dart';
+import 'package:money_manager_app/models/transations/transation_model.dart';
 
 class AddTransationScreen extends StatefulWidget {
   const AddTransationScreen({super.key});
@@ -16,6 +18,9 @@ class _AddTransationScreenState extends State<AddTransationScreen> {
 
   String? _categoryID;
 
+  final _purposeTextEditingControler = TextEditingController();
+  final _amountTextEditingControler = TextEditingController();
+
   @override
   void initState() {
     _selectedCategoryType = CategoryType.income;
@@ -25,13 +30,13 @@ class _AddTransationScreenState extends State<AddTransationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //appBar: AppBar(title: Text(""),),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(20),
           child: Column(
             children: [
               TextField(
+                controller: _purposeTextEditingControler,
                 decoration: InputDecoration(
                   hintText: "Purpose",
                   border: OutlineInputBorder(),
@@ -39,8 +44,9 @@ class _AddTransationScreenState extends State<AddTransationScreen> {
               ),
               SizedBox(height: 16),
               TextField(
+                controller: _amountTextEditingControler,
                 decoration: InputDecoration(
-                  hintText: "Name",
+                  hintText: "Amount",
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
@@ -80,7 +86,7 @@ class _AddTransationScreenState extends State<AddTransationScreen> {
                         onChanged: (newValue) {
                           setState(() {
                             _selectedCategoryType = CategoryType.income;
-                            _categoryID=null;
+                            _categoryID = null;
                           });
                         },
                       ),
@@ -95,7 +101,7 @@ class _AddTransationScreenState extends State<AddTransationScreen> {
                         onChanged: (newValue) {
                           setState(() {
                             _selectedCategoryType = CategoryType.expense;
-                            _categoryID=null;
+                            _categoryID = null;
                           });
                         },
                       ),
@@ -116,6 +122,9 @@ class _AddTransationScreenState extends State<AddTransationScreen> {
                           return DropdownMenuItem(
                             value: e.id,
                             child: Text(e.name),
+                            onTap: () {
+                              _selectedCategoryModel = e;
+                            },
                           );
                         })
                         .toList(),
@@ -126,11 +135,53 @@ class _AddTransationScreenState extends State<AddTransationScreen> {
                 },
               ),
               SizedBox(height: 16),
-              ElevatedButton(onPressed: () {}, child: Text("Submit")),
+              ElevatedButton(
+                onPressed: () {
+                  addTransation();
+                },
+                child: Text("Submit"),
+              ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Future<void> addTransation() async {
+    final _purpose = _purposeTextEditingControler.text;
+    final _amount = _amountTextEditingControler.text;
+    if (_purpose.isEmpty) {
+      return;
+    }
+    if (_amount.isEmpty) {
+      return;
+    }
+
+    if (_selectedDate == null) {
+      return;
+    }
+    if (_selectedCategoryModel == null) {
+      return;
+    }
+
+    final _parsedAmount = double.tryParse(_amount);
+    if (_parsedAmount == null) {
+      return;
+    }
+    //_selectedDate
+    //_selectedCategoryType
+    //_categoryID
+    final _model = TransationModel(
+      purpose: _purpose,
+      amount: _parsedAmount,
+      date: _selectedDate!,
+      type: _selectedCategoryType!,
+      category: _selectedCategoryModel!,
+    );
+
+   await TransationDb.instance.addTransation(_model);
+   Navigator.of(context).pop();
+   TransationDb.instance.refresh();
   }
 }
