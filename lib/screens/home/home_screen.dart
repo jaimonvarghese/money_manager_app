@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:money_manager_app/screens/category/category_add_popup.dart';
 import 'package:money_manager_app/screens/category/catergory_screen.dart';
 import 'package:money_manager_app/screens/home/widgets/money_manager_bottom_navigation.dart';
+import 'package:money_manager_app/screens/transactions/add_transation_screen.dart';
 import 'package:money_manager_app/screens/transactions/transaction_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -12,7 +14,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 207, 200, 200),
+      backgroundColor: const Color.fromARGB(255, 255, 254, 254),
       appBar: AppBar(
         title: Text(
           "Money Manager",
@@ -32,9 +34,11 @@ class HomeScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           if (selectedIndexNotifier.value == 0) {
-            print('add tranction');
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (ctx) => AddTransationScreen()));
           } else {
-            print("add category");
+            showCategoryAddPopup(context);
           }
         },
         child: Icon(Icons.add),
